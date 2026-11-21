@@ -14,24 +14,19 @@ on:
         options:
           - 是
           - 否
-      print_userinfo:
-        description: "自动写入失败时是否在日志输出 USERINFO？（含登录token，默认否）"
-        required: true
-        type: choice
-        default: "否"
-        options:
-          - 否
-          - 是
 # 需要 contents: write 才能创建 Release 上传二维码直链
 permissions:
   contents: write
 jobs:
   run:
+    if: github.event.repository.private
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: 创建 Node 环境
         uses: actions/setup-node@v4
@@ -145,7 +140,6 @@ jobs:
         env:
           USERINFO: ${{ secrets.USERINFO }}
           APPEND_USER: ${{ github.event.inputs.append_user }}
-          ALLOW_PRINT_USERINFO: ${{ github.event.inputs.print_userinfo }}
           PAT: ${{ secrets.PAT }}
           GITHUB_REPOSITORY: ${{ github.repository }}
 

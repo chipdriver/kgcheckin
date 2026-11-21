@@ -31,10 +31,16 @@ async function waitForApi(base = 'http://127.0.0.1:3000', timeoutMs = 20000) {
   throw new Error(`本地 API 服务在 ${timeoutMs}ms 内未就绪`)
 }
 
-/** 启动 api 服务（detached 使其成为独立进程组，便于整组强杀） */
+/** 启动只监听回环地址的本地 API 服务。 */
 function startService() {
-  const api = spawn('npm', ['run', 'apiService'], {
-    detached: true,
+  const env = { ...process.env }
+  for (const name of ['PAT', 'GH_TOKEN', 'USERINFO', 'PHONE', 'CODE']) {
+    delete env[name]
+  }
+  const api = spawn(process.execPath, ['app.js'], {
+    cwd: new URL('../api/', import.meta.url),
+    env,
+    detached: process.platform !== 'win32',
     stdio: ['ignore', 'pipe', 'pipe'],
   })
 

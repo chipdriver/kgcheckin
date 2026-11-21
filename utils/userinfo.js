@@ -3,9 +3,9 @@
  * 提供登录脚本共享的用户信息更新与保存逻辑
  */
 
-import { printBlue, printGreen, printRed, printYellow } from './colorOut.js'
+import { printGreen, printYellow } from './colorOut.js'
 import { hasSecretWriteToken, setRepoSecret } from './githubSecrets.js'
-import { maskIdentifier, sanitizeForLog, shouldPrintSensitiveValue } from './safeLog.js'
+import { maskIdentifier } from './safeLog.js'
 
 /**
  * 将登录用户信息更新或追加到 userinfo 数组中
@@ -27,41 +27,22 @@ function upsertUser(userinfo, loginUser, append) {
 }
 
 /**
- * 保存 userinfo 到 GitHub Secret，失败时降级为日志输出
+ * 保存 userinfo 到 GitHub Secret，写入失败时报告错误
  * @param {Array} userinfo - 用户信息数组
  */
 function saveUserinfo(userinfo) {
-  if (!userinfo.length) return
-
-  const userinfoJSON = JSON.stringify(userinfo)
-
-  if (hasSecretWriteToken()) {
-    try {
-      setRepoSecret('USERINFO', userinfoJSON)
-      printGreen('secret <USERINFO> 更改成功')
-    } catch (error) {
-      printRed('自动写入 secret <USERINFO> 出错')
-      console.dir(sanitizeForLog({ message: error.message }), { depth: null })
-      printUserinfoFallback(userinfoJSON)
-    }
-  } else {
-    printYellow('PAT/GH_TOKEN 未配置，无法自动写入 secret <USERINFO>')
-    printUserinfoFallback(userinfoJSON)
+  if (!userinfo.length) {
+    throw new Error('没有可保存的登录信息')
   }
-}
-
-/**
- * 降级方案：按配置决定是否在日志中输出 USERINFO
- */
-function printUserinfoFallback(userinfoJSON) {
-  if (shouldPrintSensitiveValue()) {
-    printGreen('登录信息如下，把它添加到secret USERINFO 即可')
-    printYellow('注意：日志包含登录 token，请用完后删除 Actions 日志')
-    printBlue(userinfoJSON)
-  } else {
-    printYellow('为避免泄露 token，默认不在日志输出 USERINFO')
-    printYellow('如必须手动复制，请重新运行并将 print_userinfo 选择为 是')
+  if (!hasSecretWriteToken()) {
+    throw new Error('未配置写入仓库 Secret 的令牌')
   }
+  try {
+    setRepoSecret('USERINFO', JSON.stringify(userinfo))
+  } catch {
+    throw new Error('写入 Secret USERINFO 失败，请检查 PAT 是否有效及其仓库权限')
+  }
+  printGreen('secret <USERINFO> 更改成功')
 }
 
 export { upsertUser, saveUserinfo }

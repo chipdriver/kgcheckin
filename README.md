@@ -48,7 +48,7 @@ GitHub Actions 实现 `酷狗概念VIP` 自动签到，每天领取总计 `两�
 
    3.1 二维码登录(推荐)
 
-   运行 Actions `二维码登录`，点击 Run → 在运行摘要页面（Summary）查看二维码图片，使用酷狗音乐 APP 扫码并确认登录即可。
+   私有仓库可以运行 Actions `二维码登录`，在运行摘要页面（Summary）打开二维码。公开 Fork 请在本机执行 `npm run install` 和 `node qrcodeLogin.js gen`，打开本机 `qr/login.html`，在同一目录运行 `node qrcodeLogin.js wait`，使用酷狗音乐 APP 扫码并确认登录。等待脚本需要通过环境变量读取 `PAT` 和 `GITHUB_REPOSITORY`，以及 PATH 中的 GitHub CLI。
 
    3.2 手机号登录
 

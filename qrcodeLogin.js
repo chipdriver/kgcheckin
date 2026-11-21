@@ -197,7 +197,11 @@ async function genMode() {
 
     fs.writeFileSync(KEYS_FILE, JSON.stringify({ number, keys }))
     printMagenta(`\n✅ 已生成 ${number} 个二维码。`)
-    printMagenta(`🔗 请查看下一步「发布二维码图片直链」输出的可点击链接，浏览器打开即可直接扫码！`)
+    if (SUMMARY_FILE) {
+      printMagenta('请打开下一步「发布二维码图片直链」中的链接。')
+    } else {
+      printMagenta(`请用浏览器打开本机文件 ${QR_DIR}/login.html。`)
+    }
 
     // 写入 Summary 提示
     appendSummary(`## 🎵 酷狗音乐扫码登录\n\n✅ 已生成 ${number} 个二维码，请查看下一步「发布二维码图片直链」输出的链接进行扫码。\n\n⏳ 二维码有效期约 2 分钟，请尽快扫描。`)

@@ -15,6 +15,7 @@ const { resolveProxy } = require('./runtime');
  * @param {'get' | 'GET' | 'post' | 'POST'} options.method 请求方法
  * @param {string} options.url 请求 url
  * @param {string?} options.baseURL
+ * @param {number?} options.maxRedirects
  * @param {Record<string, any>?} options.params 请求参数
  * @param {Record<string, any>?} options.data 请求Body
  * @param {Record<string, string | number>?} options.headers 请求headers
@@ -96,6 +97,7 @@ const createRequest = (options) => {
       data: options?.data,
       method: options.method,
       baseURL: options?.baseURL,
+      maxRedirects: options.maxRedirects,
       url: options.url,
       headers: Object.assign({}, options?.headers || {}, headers),
       withCredentials: true,

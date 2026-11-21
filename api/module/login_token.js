@@ -31,7 +31,8 @@ module.exports = (params, useAxios) => {
 
   return new Promise((resolve, reject) => {
     useAxios({
-      baseURL: 'http://login.user.kugou.com',
+      baseURL: 'https://gateway.kugou.com',
+      maxRedirects: 0,
       url: `/${isLite ? 'v4' : 'v5'}/login_by_token`,
       method: 'POST',
       data: dataMap,
